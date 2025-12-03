@@ -9,8 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/redux/hooks";
 import {
   LineChart,
   Line,
@@ -22,7 +21,7 @@ import {
 } from "recharts";
 
 export function SalesChart() {
-  const totalSales = useSelector((state: RootState) => state.sales.totalSales);
+  const totalSales = useAppSelector((state) => state.sales.totalSales);
 
   if (!totalSales || totalSales.length === 0) {
     return (
