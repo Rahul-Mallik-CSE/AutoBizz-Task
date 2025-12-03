@@ -6,6 +6,7 @@ import "./globals.css";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/AllComponents/DashboardSidebar";
 import NavBar from "@/components/AllComponents/NabBar";
+import { Provider } from "react-redux";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,15 +39,17 @@ export default function RootLayout({
         className={` ${geistSans.variable} ${geistMono.variable} ${zillaSlab.variable} antialiased bg-[#f3f3f3] font-sans`}
         style={{ fontFamily: "var(--font-zilla-slab)" }}
       >
-        <SidebarProvider>
-          <DashboardSidebar />
-          <SidebarInset>
-            <div className={`px-4 bg-[#f3f3f3] min-h-screen `}>
-              <NavBar />
-              {children}
-            </div>
-          </SidebarInset>
-        </SidebarProvider>
+        <Provider store={store}>
+          <SidebarProvider>
+            <DashboardSidebar />
+            <SidebarInset>
+              <div className={`px-4 bg-[#f3f3f3] min-h-screen `}>
+                <NavBar />
+                {children}
+              </div>
+            </SidebarInset>
+          </SidebarProvider>
+        </Provider>
       </body>
     </html>
   );
