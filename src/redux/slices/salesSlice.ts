@@ -58,29 +58,43 @@ export const fetchSales = createAsyncThunk(
   "sales/fetchSales",
   async (params: FetchSalesParams, { rejectWithValue }) => {
     try {
-      const query = new URLSearchParams({
-        startDate: params.startDate,
-        endDate: params.endDate,
-        sortBy: params.sortBy || "date",
-        sortOrder: params.sortOrder || "asc",
+      // Build query params - API requires ALL parameters to be present, even if empty
+      const query = new URLSearchParams();
+      query.append("startDate", params.startDate);
+      query.append("endDate", params.endDate);
+      query.append("priceMin", params.priceMin || "");
+      query.append("email", params.email || "");
+      query.append("phone", params.phone || "");
+      query.append("sortBy", params.sortBy || "date");
+      query.append("sortOrder", params.sortOrder || "asc");
+      query.append("after", params.after || "");
+      query.append("before", params.before || "");
+
+      const url = `https://autobizz-425913.uc.r.appspot.com/sales?${query.toString()}`;
+      console.log("Fetching sales from:", url);
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "X-AUTOBIZZ-TOKEN": params.token,
+        },
       });
 
-      if (params.priceMin) query.append("priceMin", params.priceMin);
-      if (params.email) query.append("email", params.email);
-      if (params.phone) query.append("phone", params.phone);
-      if (params.after) query.append("after", params.after);
-      if (params.before) query.append("before", params.before);
+      console.log("Response status:", response.status);
 
-      const response = await fetch(
-        `https://autobizz-425913.uc.r.appspot.com/sales?${query}`,
-        {
-          headers: { "X-AUTOBIZZ-TOKEN": params.token },
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch sales");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Error response:", errorData);
+        throw new Error(
+          errorData.error || `Failed to fetch sales: ${response.status}`
+        );
+      }
 
       const data = await response.json();
+      console.log("Sales data received:", {
+        salesCount: data.results?.Sales?.length || 0,
+        totalSalesCount: data.results?.TotalSales?.length || 0,
+      });
       return data;
     } catch (error) {
       return rejectWithValue(

@@ -18,6 +18,7 @@ export const getAuthorization = createAsyncThunk(
   "auth/getAuthorization",
   async (_, { rejectWithValue }) => {
     try {
+      console.log("Requesting authorization...");
       const response = await fetch(
         "https://autobizz-425913.uc.r.appspot.com/getAuthorize",
         {
@@ -27,9 +28,12 @@ export const getAuthorization = createAsyncThunk(
         }
       );
 
+      console.log("Auth response status:", response.status);
+
       if (!response.ok) throw new Error("Failed to get authorization");
 
       const data = await response.json();
+      console.log("Authorization data received:", data);
       return data.token;
     } catch (error) {
       return rejectWithValue(
