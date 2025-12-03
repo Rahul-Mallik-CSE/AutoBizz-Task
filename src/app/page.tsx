@@ -64,62 +64,31 @@ function DashboardContent() {
           </p>
         </div>
 
-        {/* Error States */}
-        {authError && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Authorization Error: {authError}
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Error loading sales data: {error}
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Loading State */}
-        {!token || loading ? (
-          <Card className="flex items-center justify-center h-64">
-            <CardContent className="flex flex-col items-center gap-2">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <p className="text-muted-foreground">
-                {!token ? "Initializing..." : "Loading sales data..."}
-              </p>
+        <div>
+          {/* Filters Section */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Filters</CardTitle>
+              <CardDescription>
+                Adjust filters to see updated sales data in real-time
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <DateRangeFilter />
+              <OtherFilters />
             </CardContent>
           </Card>
-        ) : (
-          <>
-            {/* Filters Section */}
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Filters</CardTitle>
-                <CardDescription>
-                  Adjust filters to see updated sales data in real-time
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <DateRangeFilter />
-                <OtherFilters />
-              </CardContent>
-            </Card>
 
-            {/* Chart Section */}
-            <div className="mb-8">
-              <SalesChart />
-            </div>
+          {/* Chart Section */}
+          <div className="mb-8">
+            <SalesChart />
+          </div>
 
-            {/* Table Section */}
-            <div>
-              <SalesTable />
-            </div>
-          </>
-        )}
+          {/* Table Section */}
+          <div>
+            <SalesTable />
+          </div>
+        </div>
       </div>
     </main>
   );
