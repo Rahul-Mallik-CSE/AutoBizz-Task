@@ -119,8 +119,8 @@ function NavItem({
               ? "flex items-center justify-center px-2 py-3 transition-colors rounded-full w-12 h-12 mx-auto"
               : "flex items-center gap-3 px-4 py-3 transition-colors rounded-md",
             active
-              ? "bg-red-800 text-white hover:bg-red-700! hover:text-white! font-medium"
-              : "bg-transparent text-black hover:bg-red-100!  font-medium"
+              ? "bg-black text-white hover:bg-gray-900! hover:text-white! font-medium"
+              : "bg-transparent text-black hover:bg-black-100!  font-medium"
           )}
         >
           <Icon size={collapsed ? 20 : 18} />
