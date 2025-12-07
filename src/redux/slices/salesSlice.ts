@@ -23,6 +23,7 @@ interface DailyTotal {
 interface SalesState {
   sales: Sale[];
   totalSales: DailyTotal[];
+  chartData: DailyTotal[]; // Unfiltered data for chart
   pagination: {
     before: string;
     after: string;
@@ -35,6 +36,7 @@ interface SalesState {
 const initialState: SalesState = {
   sales: [],
   totalSales: [],
+  chartData: [],
   pagination: { before: "", after: "" },
   loading: false,
   error: null,
@@ -104,6 +106,52 @@ export const fetchSales = createAsyncThunk(
   }
 );
 
+export const fetchChartData = createAsyncThunk(
+  "sales/fetchChartData",
+  async (params: { token: string; startDate: string; endDate: string }, { rejectWithValue }) => {
+    try {
+      // For chart data, fetch without any filters except date range
+      const query = new URLSearchParams();
+      query.append("startDate", params.startDate);
+      query.append("endDate", params.endDate);
+      query.append("priceMin", "");
+      query.append("email", "");
+      query.append("phone", "");
+      query.append("sortBy", "date");
+      query.append("sortOrder", "asc");
+      query.append("after", "");
+      query.append("before", "");
+
+      const url = `https://autobizz-425913.uc.r.appspot.com/sales?${query.toString()}`;
+      console.log("Fetching chart data from:", url);
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "X-AUTOBIZZ-TOKEN": params.token,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `Failed to fetch chart data: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      console.log("Chart data received:", {
+        totalSalesCount: data.results?.TotalSales?.length || 0,
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Failed to fetch chart data"
+      );
+    }
+  }
+);
+
 const salesSlice = createSlice({
   name: "sales",
   initialState,
@@ -129,6 +177,9 @@ const salesSlice = createSlice({
       .addCase(fetchSales.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchChartData.fulfilled, (state, action) => {
+        state.chartData = action.payload.results.TotalSales;
       });
   },
 });

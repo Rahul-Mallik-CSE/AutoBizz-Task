@@ -5,7 +5,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getAuthorization } from "@/redux/slices/authSlice";
-import { fetchSales, fetchChartData } from "@/redux/slices/salesSlice";
+import { fetchSales } from "@/redux/slices/salesSlice";
 import { DateRangeFilter } from "@/components/AllComponents/filters/date-range-filter";
 import { OtherFilters } from "@/components/AllComponents/filters/other-filters";
 import { SalesChart } from "@/components/AllComponents/sales-chart";
@@ -17,13 +17,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 function DashboardContent() {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
   const filters = useAppSelector((state) => state.filters.filters);
-
+  const loading = useAppSelector((state) => state.sales.loading);
+  const error = useAppSelector((state) => state.sales.error);
+  const authError = useAppSelector((state) => state.auth.error);
 
   useEffect(() => {
     if (!token) {
@@ -48,51 +51,36 @@ function DashboardContent() {
     }
   }, [token, filters, dispatch]);
 
-  // Separate effect for chart data - only depends on date range, not other filters
-  useEffect(() => {
-    if (token) {
-      dispatch(
-        fetchChartData({
-          token,
-          startDate: filters.startDate,
-          endDate: filters.endDate,
-        })
-      );
-    }
-  }, [token, filters.startDate, filters.endDate, dispatch]);
-
   return (
-    <main className="min-h-screen bg-transparent">
-      <div className="max-w-7xl mx-auto py-8">
+    <main className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-4 ">
-          <h1 className="text-2xl font-bold text-foreground">
-            Track and analyze your sales data with powerful filters
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground">
+            Sales Analytics Dashboard
           </h1>
+          <p className="text-muted-foreground mt-2">
+            Track and analyze your sales data with powerful filters
+          </p>
         </div>
 
-        {/* Sticky Filters Section */}
-        <div className="sticky top-12 z-40 ">
-          <div className=" py-4">
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle>Filters</CardTitle>
-                <CardDescription>
-                  Adjust filters to see updated sales data in real-time
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <DateRangeFilter />
-                <OtherFilters />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        <div>
+          {/* Filters Section */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Filters</CardTitle>
+              <CardDescription>
+                Adjust filters to see updated sales data in real-time
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <DateRangeFilter />
+              <OtherFilters />
+            </CardContent>
+          </Card>
 
-        {/* Content Section */}
-        <div className="">
           {/* Chart Section */}
-          <div className="mb-8 mt-8">
+          <div className="mb-8">
             <SalesChart />
           </div>
 

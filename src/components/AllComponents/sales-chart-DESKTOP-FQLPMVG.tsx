@@ -21,9 +21,9 @@ import {
 } from "recharts";
 
 export function SalesChart() {
-  const chartData = useAppSelector((state) => state.sales.chartData);
+  const totalSales = useAppSelector((state) => state.sales.totalSales);
 
-  if (!chartData || chartData.length === 0) {
+  if (!totalSales || totalSales.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -39,7 +39,7 @@ export function SalesChart() {
     );
   }
 
-  const formattedChartData = chartData.map((item) => ({
+  const chartData = totalSales.map((item) => ({
     day: new Date(item.day).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -52,13 +52,13 @@ export function SalesChart() {
       <CardHeader>
         <CardTitle>Total Sales Over Time</CardTitle>
         <CardDescription>
-          Daily sales trend (all data - not affected by filters)
+          Daily sales trend for the selected period
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
-            data={formattedChartData}
+            data={chartData}
             margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
